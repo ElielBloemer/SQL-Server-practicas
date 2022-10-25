@@ -128,12 +128,42 @@ where prod_codigo in (select stoc_producto from STOCK where stoc_cantidad > 1) -
 group by prod_codigo,prod_detalle
 order by count (comp_cantidad) DESC
 
- 
-
-
-
 select * from Producto left join STOCK on prod_codigo = stoc_producto
 
 select * from Producto left join Composicion on prod_codigo = comp_producto
+
+ -- EJERCICIO 5 
+
+ /*Realizar una consulta que muestre código de artículo, detalle y cantidad de egresos de 
+stock que se realizaron para ese artículo en el año 2012 (egresan los productos que 
+fueron vendidos). Mostrar solo aquellos que hayan tenido más egresos que en el 2011*/
+-- TABLAS
+-- PRODUCTO
+-- ITEM FACTURA 
+-- FACTURA 
+
+SELECT prod_codigo,prod_detalle,sum(item_cantidad)cantidad_vendida FROM Producto JOIN Item_Factura ON prod_codigo = item_producto
+JOIN Factura ON fact_tipo+fact_sucursal+fact_numero=item_tipo+item_sucursal+item_numero
+where year(fact_fecha) = 2012
+group by prod_codigo,prod_detalle
+having sum(item_cantidad) > (select sum(item_cantidad) from Item_Factura join Factura ON fact_tipo+fact_sucursal+fact_numero=item_tipo+item_sucursal+item_numero
+where year(fact_fecha) = 2011 and item_producto = prod_codigo)
+
+
+--EJERCICIO 6
+/* Mostrar para todos los rubros de artículos código, detalle, cantidad de artículos de ese 
+rubro y stock total de ese rubro de artículos. Solo tener en cuenta aquellos artículos que 
+tengan un stock mayor al del artículo ‘00000000’ en el depósito ‘00’*/
+
+           --tablas
+--RUBRO
+--PRODUCTO
+--STOCK
+--DEPOSITO
+SELECT prod_codigo,prod_detalle,rubr_id,SUM(stoc_cantidad)cantidad FROM RUBRO left join Producto ON prod_rubro=rubr_id
+                                                        JOIN STOCK ON prod_codigo = stoc_producto
+GROUP BY rubr_id,prod_codigo,prod_detalle
+HAVING SUM(stoc_cantidad) > (SELECT stoc_cantidad FROM STOCK WHERE stoc_producto = '00000000' AND stoc_deposito = '00')
+order by sum(stoc_cantidad) desc
  
-                    
+--select stoc_cantidad,stoc_producto from STOCK where sum(stoc_cantidad) = '125'
