@@ -159,11 +159,14 @@ tengan un stock mayor al del artículo ‘00000000’ en el depósito ‘00’*/
 --RUBRO
 --PRODUCTO
 --STOCK
---DEPOSITO
-SELECT prod_codigo,prod_detalle,rubr_id,SUM(stoc_cantidad)cantidad FROM RUBRO left join Producto ON prod_rubro=rubr_id
-                                                        JOIN STOCK ON prod_codigo = stoc_producto
-GROUP BY rubr_id,prod_codigo,prod_detalle
-HAVING SUM(stoc_cantidad) > (SELECT stoc_cantidad FROM STOCK WHERE stoc_producto = '00000000' AND stoc_deposito = '00')
-order by sum(stoc_cantidad) desc
+SELECT rubr_detalle,rubr_id,count(distinct prod_codigo) cantidad_rubro,sum(stoc_cantidad)cantidad_stock FROM RUBRO left join Producto ON prod_rubro=rubr_id
+JOIN STOCK ON prod_codigo = stoc_producto
+where prod_detalle in (select stoc_producto from STOCK group by stoc_producto having sum(stoc_cantidad) > (SELECT stoc_cantidad FROM STOCK WHERE stoc_producto = '00000000' AND stoc_deposito = '00'))
+GROUP BY rubr_id,rubr_detalle
+
+--order by sum(stoc_cantidad) desc
+select * from STOCK
+
+select rubr_id,rubr_detalle from Rubro
  
---select stoc_cantidad,stoc_producto from STOCK where sum(stoc_cantidad) = '125'
+--select stoc_cantidad,stoc_producto from STOCK where sum(stoc_cantidad) = '125'  
