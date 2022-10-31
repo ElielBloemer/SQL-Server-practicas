@@ -164,9 +164,9 @@ JOIN STOCK ON prod_codigo = stoc_producto
 where prod_detalle in (select stoc_producto from STOCK group by stoc_producto having sum(stoc_cantidad) > (SELECT stoc_cantidad FROM STOCK WHERE stoc_producto = '00000000' AND stoc_deposito = '00'))
 GROUP BY rubr_id,rubr_detalle
 
---order by sum(stoc_cantidad) desc
-select * from STOCK
 
-select rubr_id,rubr_detalle from Rubro
- 
---select stoc_cantidad,stoc_producto from STOCK where sum(stoc_cantidad) = '125'  
+/*7 - Generar una consulta que muestre para cada artículo código, detalle, mayor precio 
+menor precio y % de la diferencia de precios (respecto del menor Ej.: menor precio = 
+10, mayor precio = 12 => mostrar 20%). Mostrar solo aquellos artículos que posean 
+stock.*/-- UNIVERSO POSIBLE...-- ITEM FACTURA, pq es donde esta el registro de los precios-- STOCK-- PRODUCTO--ROMPIENDO LA ATOMICIDADselect prod_codigo,prod_detalle,max(item_precio) precio_maximo,min(item_precio) precio_minimo,(100 - (min(item_precio) / max(item_precio))*100) porcentaje from Producto JOIN Item_Factura on prod_codigo = item_producto                                              JOIN STOCK ON prod_codigo = stoc_productowhere stoc_cantidad > 0 group by prod_codigo,prod_detalle--NO ROMPIENDO LA ATOMICIDADselect prod_codigo,prod_detalle,max(item_precio) precio_maximo,min(item_precio) precio_minimo,(100 - (min(item_precio) / max(item_precio))*100) from Producto JOIN Item_Factura on prod_codigo=item_productowhere prod_codigo in (select distinct stoc_producto from stock where stoc_cantidad > 0)group by prod_codigo, prod_detalle/*8 - Mostrar para el o los artículos que tengan stock en todos los depósitos, nombre del
+artículo, stock del depósito que más stock tiene.*/--STOCK--DEPOSITOselect prod_detalle,max(stoc_cantidad) from Producto join STOCK on prod_codigo = stoc_productowhere stoc_cantidad > 0group by prod_detallehaving count(*) = (select count(*) from DEPOSITO)
