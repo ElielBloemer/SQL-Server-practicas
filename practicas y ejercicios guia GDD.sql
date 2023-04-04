@@ -45,8 +45,8 @@ group by clie_vendedor,rtrim(empl_apellido)+' '+empl_nombre
 /* Ya se puede hacer el ejercicio 1,2 y talvez el 3 */
 
 /*             EJERCICIOS GUIA
-  1- Mostrar el código, razón social de todos los clientes cuyo límite de crédito sea mayor o 
-igual a $ 1000 ordenado por código de cliente
+  1- Mostrar el cÃ³digo, razÃ³n social de todos los clientes cuyo lÃ­mite de crÃ©dito sea mayor o 
+igual a $ 1000 ordenado por cÃ³digo de cliente
 */
 select * from Cliente 
 
@@ -80,11 +80,11 @@ group by clie_razon_social
 order by count(*) 
 
  /*
- 2- Mostrar el código, detalle de todos los artículos vendidos en el año 2012 ordenados por 
+ 2- Mostrar el cÃ³digo, detalle de todos los artÃ­culos vendidos en el aÃ±o 2012 ordenados por 
 cantidad vendida
 */
 
-/* 1º PRIMERO DEBO DEFINIR EL UNIVERSO */
+/* 1Âº PRIMERO DEBO DEFINIR EL UNIVERSO */
 -- Los productos que fueron vendidos son los que tienen una factura
 -- OJO cuando JOINEO 2 tablas, la que tiene mas filas aparece
 select prod_codigo,prod_detalle,sum(item_cantidad) from Producto join Item_Factura on prod_codigo = item_producto
@@ -94,9 +94,9 @@ select prod_codigo,prod_detalle,sum(item_cantidad) from Producto join Item_Factu
 											  order by sum(item_cantidad) DESC
 
 
-/* 3 - Realizar una consulta que muestre código de producto, nombre de producto y el stock 
+/* 3 - Realizar una consulta que muestre cÃ³digo de producto, nombre de producto y el stock 
 total, sin importar en que deposito se encuentre, los datos deben ser ordenados por 
-nombre del artículo de menor a mayor.*/
+nombre del artÃ­culo de menor a mayor.*/
 select * from Producto join STOCK on prod_codigo = stoc_producto
 
 select prod_codigo,prod_detalle,isnull(sum(stoc_cantidad),0) cantidad_total from Producto left join STOCK on prod_codigo = stoc_producto
@@ -114,9 +114,9 @@ where prod_codigo in (select stoc_producto from STOCK where stoc_cantidad>0 )
 group by prod_detalle,prod_codigo
 order by prod_detalle
 
-/*4 - Realizar una consulta que muestre para todos los artículos código, detalle y cantidad de 
-artículos que lo componen. Mostrar solo aquellos artículos para los cuales el stock 
-promedio por depósito sea mayor a 100*/  
+/*4 - Realizar una consulta que muestre para todos los artÃ­culos cÃ³digo, detalle y cantidad de 
+artÃ­culos que lo componen. Mostrar solo aquellos artÃ­culos para los cuales el stock 
+promedio por depÃ³sito sea mayor a 100*/  
 
 --Producto
 --Componente
@@ -134,9 +134,9 @@ select * from Producto left join Composicion on prod_codigo = comp_producto
 
  -- EJERCICIO 5 
 
- /*Realizar una consulta que muestre código de artículo, detalle y cantidad de egresos de 
-stock que se realizaron para ese artículo en el año 2012 (egresan los productos que 
-fueron vendidos). Mostrar solo aquellos que hayan tenido más egresos que en el 2011*/
+ /*Realizar una consulta que muestre cÃ³digo de artÃ­culo, detalle y cantidad de egresos de 
+stock que se realizaron para ese artÃ­culo en el aÃ±o 2012 (egresan los productos que 
+fueron vendidos). Mostrar solo aquellos que hayan tenido mÃ¡s egresos que en el 2011*/
 -- TABLAS
 -- PRODUCTO
 -- ITEM FACTURA 
@@ -151,9 +151,9 @@ where year(fact_fecha) = 2011 and item_producto = prod_codigo)
 
 
 --EJERCICIO 6
-/* Mostrar para todos los rubros de artículos código, detalle, cantidad de artículos de ese 
-rubro y stock total de ese rubro de artículos. Solo tener en cuenta aquellos artículos que 
-tengan un stock mayor al del artículo ‘00000000’ en el depósito ‘00’*/
+/* Mostrar para todos los rubros de artÃ­culos cÃ³digo, detalle, cantidad de artÃ­culos de ese 
+rubro y stock total de ese rubro de artÃ­culos. Solo tener en cuenta aquellos artÃ­culos que 
+tengan un stock mayor al del artÃ­culo â€˜00000000â€™ en el depÃ³sito â€˜00â€™*/
 
            --tablas
 --RUBRO
@@ -161,12 +161,40 @@ tengan un stock mayor al del artículo ‘00000000’ en el depósito ‘00’*/
 --STOCK
 SELECT rubr_detalle,rubr_id,count(distinct prod_codigo) cantidad_rubro,sum(stoc_cantidad)cantidad_stock FROM RUBRO left join Producto ON prod_rubro=rubr_id
 JOIN STOCK ON prod_codigo = stoc_producto
-where prod_detalle in (select stoc_producto from STOCK group by stoc_producto having sum(stoc_cantidad) > (SELECT stoc_cantidad FROM STOCK WHERE stoc_producto = '00000000' AND stoc_deposito = '00'))
+where prod_codigo in (select stoc_producto from STOCK group by stoc_producto having sum(stoc_cantidad) > (SELECT stoc_cantidad FROM STOCK WHERE stoc_producto = '00000000' AND stoc_deposito = '00'))
 GROUP BY rubr_id,rubr_detalle
 
 
-/*7 - Generar una consulta que muestre para cada artículo código, detalle, mayor precio 
+/*7 - Generar una consulta que muestre para cada artÃ­culo cÃ³digo, detalle, mayor precio 
 menor precio y % de la diferencia de precios (respecto del menor Ej.: menor precio = 
-10, mayor precio = 12 => mostrar 20%). Mostrar solo aquellos artículos que posean 
-stock.*/-- UNIVERSO POSIBLE...-- ITEM FACTURA, pq es donde esta el registro de los precios-- STOCK-- PRODUCTO--ROMPIENDO LA ATOMICIDADselect prod_codigo,prod_detalle,max(item_precio) precio_maximo,min(item_precio) precio_minimo,(100 - (min(item_precio) / max(item_precio))*100) porcentaje from Producto JOIN Item_Factura on prod_codigo = item_producto                                              JOIN STOCK ON prod_codigo = stoc_productowhere stoc_cantidad > 0 group by prod_codigo,prod_detalle--NO ROMPIENDO LA ATOMICIDADselect prod_codigo,prod_detalle,max(item_precio) precio_maximo,min(item_precio) precio_minimo,(100 - (min(item_precio) / max(item_precio))*100) from Producto JOIN Item_Factura on prod_codigo=item_productowhere prod_codigo in (select distinct stoc_producto from stock where stoc_cantidad > 0)group by prod_codigo, prod_detalle/*8 - Mostrar para el o los artículos que tengan stock en todos los depósitos, nombre del
-artículo, stock del depósito que más stock tiene.*/--STOCK--DEPOSITOselect prod_detalle,max(stoc_cantidad) from Producto join STOCK on prod_codigo = stoc_productowhere stoc_cantidad > 0group by prod_detallehaving count(*) = (select count(*) from DEPOSITO)
+10, mayor precio = 12 => mostrar 20%). Mostrar solo aquellos artÃ­culos que posean 
+stock.
+*/
+
+-- UNIVERSO POSIBLE...
+-- ITEM FACTURA, pq es donde esta el registro de los precios
+-- STOCK
+-- PRODUCTO
+
+--ROMPIENDO LA ATOMICIDAD
+select prod_codigo,prod_detalle,max(item_precio) precio_maximo,min(item_precio) precio_minimo,(100 - (min(item_precio) / max(item_precio))*100) porcentaje from Producto JOIN Item_Factura on prod_codigo = item_producto
+                                              JOIN STOCK ON prod_codigo = stoc_producto
+where stoc_cantidad > 0 
+group by prod_codigo,prod_detalle
+
+--NO ROMPIENDO LA ATOMICIDAD
+select prod_codigo,prod_detalle,max(item_precio) precio_maximo,min(item_precio) precio_minimo,(100 - (min(item_precio) / max(item_precio))*100) from Producto JOIN Item_Factura on prod_codigo=item_producto
+where prod_codigo in (select distinct stoc_producto from stock where stoc_cantidad > 0)
+group by prod_codigo, prod_detalle
+
+
+/*8 - Mostrar para el o los artÃ­culos que tengan stock en todos los depÃ³sitos, nombre del
+artÃ­culo, stock del depÃ³sito que mÃ¡s stock tiene.
+*/
+--STOCK
+--DEPOSITO
+
+select prod_detalle,max(stoc_cantidad) from Producto join STOCK on prod_codigo = stoc_producto
+where stoc_cantidad > 0
+group by prod_detalle
+having count(*) = (select count(*) from DEPOSITO)
