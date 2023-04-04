@@ -194,7 +194,8 @@ artículo, stock del depósito que más stock tiene.
 --STOCK
 --DEPOSITO
 
-select prod_detalle,max(stoc_cantidad) from Producto join STOCK on prod_codigo = stoc_producto
+select p.prod_detalle,sum(stoc_cantidad) from Producto p join STOCK s on p.prod_codigo=s.stoc_producto
 where stoc_cantidad > 0
-group by prod_detalle
-having count(*) = (select count(*) from DEPOSITO)
+group by p.prod_detalle
+having count(distinct s.stoc_deposito) = (select count(depo_codigo) from DEPOSITO)
+
